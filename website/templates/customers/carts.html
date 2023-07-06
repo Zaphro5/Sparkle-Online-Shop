@@ -1,0 +1,72 @@
+{% extends "base.html" %} 
+{% block title %}Home - Sparkle Online Shop{% endblock %} {% block content %}
+    <div class="container">
+      <div class="jumbotron p-3 well text-center">
+        <h1><img src="{{ url_for('static', filename='images/logos/sparkle.png') }}" id="img" x="0" y="0" height="110px" width="110px" style="border:3px solid; border-color:yellow; border-radius:55px" alt="Sparkle Logo"><br>SPARKLE ONLINE SHOP</h1>
+      </div>
+      <div class="jumbotron p-3">
+        <h2 class="well text-center"><b>Your Shopping Cart</b></h2>
+      </div>
+      <div class="row bg-light">
+        <table class="table table-sm">
+            <thead align="center">
+                <th>Sr</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Discount</th>
+                <th>Subtotal</th>
+                <th>Actions</th>
+            </thead>
+            <tbody   align="center">
+                {% for key , product in session['shopcart'].items() %}
+                {% set discount = "%.2f" |format((product.discount/100) * product.price|float) %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    {% if product.image == 'None' %}
+                        <td><img data-toggle="modal" data-target="#descmodal" src="{{ url_for('static', filename='images/product_images/default-product-image.png')}}" width="50"></td>
+                    {% else %}
+                        <td><img data-toggle="modal" data-target="#descmodal" src="{{ url_for('static', filename='images/product_images/' + product.image)}}" width="50"></td>
+                    {% endif %}
+                    <td>{{ product.name }}</td>
+                    <form action="{{ url_for('views.updateOrder', code=key) }}" method="POST">
+                    {{ csrf_token }}
+                    <td>₱ {{ product.price }}</td>
+                    <td><input type="number" name="quantity" min="1" max="{{ product.stock }}" value="{{ product.quantity }}"></td>
+                    {% if product.discount > 0 %}
+                        <td>{{ product.discount }} % is ₱ {{ discount }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% set subtotal = product.quantity|int * product.price|float - discount|float %}
+                    <td>₱ {{ subtotal }}</td>
+                    <td>
+                        <button type="submit" class="btn btn-info btn-xs">Update</button>
+                    </form>
+                        <a href="{{ url_for('views.removeItem', id=key) }}" class="btn btn-warning btn-xs" onclick="return confirm('Are you sure you want to remove this product from your Cart?')">Remove</a>
+                    </td>
+                </tr>
+
+                
+                {% endfor %}
+            </tbody>
+            <table class="table table-sn">
+                <tr>
+                    <td><a href="{{ url_for('auth.getOrder')}}" class="btn btn-primary btn-xs float-left ml-sm-5 mr-sm-5">Order Now</a></td>
+                    <td><h4><b>Tax : ₱ {{ tax }}</b></h4></td>
+                    <td><h4><b>Grand Total : ₱ {{ grandtotal }}</b></h4></td>
+                    <td><a href="{{ url_for('views.clearCart')}}" class="btn btn-danger btn-xs float-right mr-sm-5" onclick="return confirm('Are you sure you want to clear items from your Cart?')">Clear Cart</a></td>
+                </tr>
+            </table>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="jumbotron p-1 mt-5">
+        <h4 class="well text-center">© 2022 Copyright: Sparkle Online Shop - <a href="https://www.facebook.com/profile.php?id=100089051707212&mibextid=ZbWKwL">Team Alola</a></h4>
+    </div>
+  
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %} 
+{% block title %}Home - Sparkle Online Shop{% endblock %} {% block content %}
+    <div class="container">
+      <div class="jumbotron p-3 well text-center">
+        <h1><img src="{{ url_for('static', filename='images/logos/sparkle.png') }}" id="img" x="0" y="0" height="110px" width="110px" style="border:3px solid; border-color:yellow; border-radius:55px" alt="Sparkle Logo"><br>SPARKLE ONLINE SHOP</h1>
+      </div>
+      {% if brand %}
+      <div class="jumbotron p-3">
+        <h2 class="well text-center"><b>Brand Products</b></h2>
+      </div>
+      {% elif get_catprod %}
+      <div class="jumbotron p-3">
+        <h2 class="well text-center"><b>Category Products</b></h2>
+      </div>
+      {% else %}
+      <div class="jumbotron p-3">
+        <h2 class="well text-center"><b>ALL PRODUCTS</b></h2>
+      </div>
+      {% endif %}
+      <div class="row">
+        {% if brand %}
+        {% for b in brand %}
+        <div class="col-md-3 mt-3">
+            <div class="card">
+                {% if b.image == 'None' %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/default-product-image.png')}}" height="200" alt="{{ b.name }}"></td>
+                {% else %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/' + b.image)}}" height="200" alt="{{ b.name }}"></td>
+                {% endif %}
+                <div class="card-body">
+                    {% if b.discount > 0 %}
+                        <p style="text-shadow: 1px 1px 2px black; color: red; transform: rotate(-15deg); position: absolute; top: 20%; left: 20%;"> Discount: {{ b.discount }} % </p>
+                    {% endif %}
+                    <h5 class="text-center">{{ b.name }}</h5>
+                    <p class="text-center">Price: ₱ {{ b.price }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="/getdesc/{{ b.id }}"class="float-left btn btn-sm btn-primary">Details</a>
+                    <form action="{{ url_for('views.addCart')}}" method="POST">
+                      {{ csrf_token }}
+                        <input type="hidden" name="product_id" value="{{ b.id }}">
+                        <button type="submit" class="float-right btn btn-sm btn-warning">Add to Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ b.stock }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% elif get_catprod %}
+        {% for gcp in get_catprod %}
+        <div class="col-md-3 mt-3">
+            <div class="card">
+                {% if gcp.image == 'None' %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/default-product-image.png')}}" height="200" alt="{{ gcp.name }}"></td>
+                {% else %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/' + gcp.image)}}" height="200" alt="{{ gcp.name }}"></td>
+                {% endif %}
+                <div class="card-body">
+                    {% if gcp.discount > 0 %}
+                        <p style="text-shadow: 1px 1px 2px black; color: red; transform: rotate(-15deg); position: absolute; top: 20%; left: 20%;"> Discount: {{ gcp.discount }} % </p>
+                    {% endif %}
+                    <h5 class="text-center">{{ gcp.name }}</h5>
+                    <p class="text-center">Price: ₱ {{ gcp.price }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="/getdesc/{{ gcp.id }}" class="float-left btn btn-sm btn-primary">Details</a>
+                    <form action="{{ url_for('views.addCart')}}" method="POST">
+                      {{ csrf_token }}
+                        <input type="hidden" name="product_id" value="{{ gcp.id }}">
+                        <button type="submit" class="float-right btn btn-sm btn-warning">Add to Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ gcp.stock }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% else %}
+        {% for product in products %}
+        <div class="col-md-3 mt-3">
+            <div class="card">
+                {% if product.image == 'None' %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/default-product-image.png')}}" height="200" alt="{{ product.name }}"></td>
+                {% else %}
+                  <td><img class="card-img-top" src="{{ url_for('static', filename='images/product_images/' + product.image)}}" height="200" alt="{{ product.name }}"></td>
+                {% endif %}
+                <div class="card-body">
+                    {% if product.discount > 0 %}
+                        <h4 style="text-shadow: 1px 1px 2px black; color: red; transform: rotate(-15deg); position: absolute; top: 20%; left: 18%;"> Discount: {{ product.discount }} % </h4>
+                    {% endif %}
+                    <h5 class="text-center">{{ product.name }}</h5>
+                    <p class="text-center">Price: ₱ {{ product.price }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="/getdesc/{{ product.id }}" class="float-left btn btn-sm btn-primary">Details</a>
+                    <form action="{{ url_for('views.addCart')}}" method="POST">
+                      {{ csrf_token }}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <button type="submit" class="float-right btn btn-sm btn-warning">Add to Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{ product.stock }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="jumbotron p-1 mt-5">
+        <h4 class="well text-center">© 2022 Copyright: Sparkle Online Shop - <a href="https://www.facebook.com/profile.php?id=100089051707212&mibextid=ZbWKwL">Team Alola</a></h4>
+      </div>
+      
+  
+{% endblock %}

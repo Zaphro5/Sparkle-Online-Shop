@@ -1,0 +1,108 @@
+{% extends "base.html" %} 
+{% block title %}Panel Categories{% endblock %} {% block content %}
+    <div class="jumbotron p-3">
+      <div class="well text-center">
+        <h1>ADMIN PANEL</h1>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col md-12">
+
+          <div class="jumbotron p-3">
+            <h2><b>BRANDS</b> 
+            <button type="button" class="btn btn-success float-right"
+            data-toggle="modal" data-target="#catmodal">+ Add New Brand</button>
+            <a href="/delete-allbrands" class="btn btn-danger btn-xs float-right" style="margin-right:10px" onclick="return confirm('Are you sure you want to clear all the brands in the Brand List')">Clear Brand List</a></h2>
+
+            <table class="table table-hover table-dark">
+              {% if brands %}
+
+              <tr align="center">
+
+                <th>ID</th>
+                <th>Brand Name</th>
+                <th>Action</th>
+
+              </tr>
+
+              {% for brand in brands %}
+              <tr align="center">
+
+                <td>{{ brand.id }}</td>
+                <td>{{ brand.name }}</td>
+                <td>
+                  <a href="/edit/{{ brand.id }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{ brand.id }}">Edit</a>
+                  <a href="/deletebrand/{{ brand.id }}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this brand?')">Delete</a>
+                </td>
+              </tr>
+
+              <!--Modal for Editing Category-->
+              <div id="modaledit{{ brand.id }}" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Edit Brand</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{{ url_for('views.editBrand') }}" method="POST">
+                        {{ csrf_token }}
+                        <input type="hidden" name="id" value="{{ brand.id }}">
+                        <input type="text" name="name" id="name" class="form-control" value="{{ brand.name }}">
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              {% else %}
+
+              <tr>
+
+                <th class="well text-center"><h4>No Brand in Brand List yet</h4></th>
+
+              </tr>
+
+              {% endif %}
+
+            </table>
+
+          </div>
+
+
+          <!--Modal for Adding Brand-->
+          <div id="catmodal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Add Brand</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="{{ url_for('views.insertBrand') }}" method="POST">
+                    {{ csrf_token }}
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Brand Name">
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  
+{% endblock %}

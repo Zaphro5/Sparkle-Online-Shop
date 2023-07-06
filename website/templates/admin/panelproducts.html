@@ -1,0 +1,195 @@
+{% extends "base.html" %} 
+{% block title %}Panel Products{% endblock %} {% block content %}
+    <div class="jumbotron p-3">
+      <div class="well text-center">
+        <h1>ADMIN PANEL</h1>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col md-12">
+
+          <div class="jumbotron p-3">
+            <h2><b>PRODUCTS</b> 
+            <button type="button" class="btn btn-success float-right"
+            data-toggle="modal" data-target="#mymodal">+ Add New Product</button>
+            <a href="/delete-allproducts" class="btn btn-danger btn-xs float-right" style="margin-right:10px" onclick="return confirm('Are you sure you want to clear all the products in the Product List')">Clear Product List</a></h2>
+
+            <table class="table table-hover table-dark">
+              {% if products %}
+
+              <tr align="center">
+
+                <th>ID</th>
+                <th>Product Image</th>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Action</th>
+
+              </tr>
+
+              {% for product in products %}
+              <tr align="center">
+
+                <td>{{ product.id }}</td>
+                {% if product.image == 'None' %}
+                  <td><img data-toggle="modal" data-target="#descmodal" src="{{ url_for('static', filename='images/product_images/default-product-image.png')}}" width="50"></td>
+                {% else %}
+                  <td><img data-toggle="modal" data-target="#descmodal" src="{{ url_for('static', filename='images/product_images/' + product.image)}}" width="50"></td>
+                {% endif %}
+                <td>{{ product.name }}</td>
+                <td>{{ product.brand.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.discount }} %</td>
+                <td>₱ {{ product.price }}</td>
+                <td>
+                  <a href="/edit/{{ product.id }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{ product.id }}">Edit</a>
+                  <a href="/deleteprod/{{ product.id }}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
+                </td>
+              </tr>
+
+              <!--Modal for Showing Product Description-->
+              <div id="descmodal" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Product Description</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <input type="hidden" name="id" value="{{ product.id }}">
+                      <div style="overflow: hidden">
+                        <h6>{{ product.description }}</h6>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--Modal for Editing Products-->
+              <div id="modaledit{{ product.id }}" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Edit Product</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{{ url_for('views.editProd') }}" method="POST" enctype="multipart/form-data">
+                        {{ csrf_token }}
+                        <input type="hidden" name="id" value="{{ product.id }}">
+                        <label for="name">Product Name</label>
+                        <input type="text" name="name" id="name" class="form-control" value="{{ product.name }}"><br>
+                        <label for="description">Product Description</label>
+                        <input type="text" name="description" id="description" class="form-control" value="{{ product.description }}"><br>
+                        <label for="image2">Product Image</label>
+                        <input type="file" name="image2" id="image2" class="form-control" value="{{ product.image }}"><br>
+
+                        <label for="brand">Brand</label>
+                        <select name="brand" id="brand" class="form-control">
+                          <option value="">{{ product.brand.name }}</option>
+                          {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{ brand.name }}</option>
+                          {% endfor %}
+                        </select><br>
+    
+                        <label for="category">Category</label>
+                        <select name="category" id="category" class="form-control">
+                          <option value="">{{ product.category.name }}</option>
+                          {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                          {% endfor %}
+                        </select><br>
+
+                        <label for="stock">Stock</label>
+                        <input type="number" name="stock" id="stock" class="form-control" min="0" value="{{ product.stock }}"><br>
+                        <label for="discount">Discount</label>
+                        <input type="number" name="discount" id="discount" class="form-control" min="0" value="{{ product.discount }}"><br>
+                        <label for="price">Price</label>
+                        <input type="number" name="price" id="price" class="form-control" min="0" value="{{ product.price }}">
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              {% else %}
+
+              <tr>
+
+                <th class="well text-center"><h4>No Product in Product List yet</h4></th>
+
+              </tr>
+
+              {% endif %}
+
+            </table>
+
+          </div>
+
+
+          <!--Modal for Adding Product-->
+          <div id="mymodal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Add Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="{{ url_for('views.insertProd') }}" method="POST" enctype="multipart/form-data">
+                    {{ csrf_token }}
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Product Name"><br>
+                    <input type="text" name="description" id="description" class="form-control" placeholder="Product Description"><br>
+                    <input type="file" name="image2" id="image2" class="form-control"><br>
+
+                    <select name="brand" id="brand" class="form-control" required>
+                      <option value="">Add a Brand</option>
+                      {% for brand in brands %}
+                        <option value="{{ brand.id }}">{{ brand.name }}</option>
+                      {% endfor %}
+                    </select><br>
+
+                    <select name="category" id="category" class="form-control" required>
+                      <option value="">Add a Category</option>
+                      {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                      {% endfor %}
+                    </select><br>
+
+                    <input type="number" name="stock" id="stock" class="form-control" min="1" placeholder="Stock"><br>
+                    <input type="number" name="discount" id="discount" class="form-control" min="0" placeholder="Discount"><br>
+                    <input type="number" name="price" id="price" class="form-control" min="0" placeholder="Price">
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>  
+
+        </div>
+      </div>
+    </div>
+  
+{% endblock %}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homestyle.css') }}" />
+    <!-- CSS only -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}" />
+
+    <title>{% block title %}Home{% endblock %}</title>
+    <style>
+      body{
+        padding-top: 70px !important;
+      }
+    </style>
+  
+</head>
+<body>
+  {% if user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbar"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link mr-sm-5" id="logo" href="#" style="color: white"><img src="{{ url_for('static', filename='images/logos/sparkle.png') }}" id="img" x="0" y="0" height="30px" width="30px" style="border:1px solid; border-color:yellow; border-radius:15px" alt="Sparkle Logo"></a>
+              {% if user.id == 1 %}
+                <a class="nav-item nav-link" id="profile" href="/profile" style="color: white">Profile</a>
+                <li class="nav-item nav-link dropdown">
+                  <a href="#" class="dropdown-toggle" style="text-decoration: none; color: white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Panel<span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="nav-item nav-link" id="adminhome" href="/adminhome" style="text-align: center; color:black;"><b>Products</b></a>
+                    </li>
+                    <li>
+                      <a class="nav-item nav-link" id="brands" href="/brands" style="text-align: center; color:black;"><b>Brands</b></a>
+                    </li>
+                    <li>
+                      <a class="nav-item nav-link" id="categories" href="/categories" style="text-align: center; color:black;"><b>Categories</b></a>
+                    </li>
+                  </ul>
+                </li>
+              {% else %}
+                <form class="form-inline my-2 my-lg-0 collapse navbar-collapse navbar-right" id="navbar-collapse" action="{{ url_for('auth.result') }}">
+                  {{ csrf_token }}
+                  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                  <button class="btn btn-outline-success mr-sm-5" type="submit">Search</button>
+                </form>
+                <a class="nav-item nav-link" id="cart" href="{{ url_for('auth.getCart') }}" style="color: white"><button class="btn btn-sm btn-secondary"><img src="{{ url_for('static', filename='images/icons/cart.jpg') }}" id="img" x="0" y="0" height="30px" width="30px" style="border:1px solid; border-color:yellow; border-radius:15px" alt="Cart"> {{session['shopcart']|length}} item/s</button></a>
+                <a class="nav-item nav-link active" id="profile" href="/profile" style="color: white">Profile</a>
+                <a class="nav-item nav-link" id="index" href="/" style="color: white">All Products</a>
+                <li class="nav-item nav-link dropdown">
+                  <a href="#" class="dropdown-toggle" style="text-decoration: none; color: white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Brands<span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    {% for brand in brands %}
+                      <a class="nav-item nav-link" id="brand" href="/getbrand/{{ brand.id }}" style="text-align: center; color:black;"><b>{{ brand.name }}</b></a>
+                    {% endfor %}
+                  </ul>
+                </li>
+                <li class="nav-item nav-link dropdown">
+                  <a href="#" class="dropdown-toggle" style="text-decoration: none; color: white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Categories<span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    {% for category in categories %}
+                      <a class="nav-item nav-link" id="category" href="/getcategory/{{ category.id }}" style="text-align: center; color:black;"><b>{{ category.name }}</b></a>
+                    {% endfor %}
+                  </ul>
+                </li>
+              {% endif %}
+              <li class="nav-item nav-link dropdown">
+                <a href="#" class="dropdown-toggle" style="text-decoration: none; color: white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  {% if current_user.profile_image == 'None' %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/default-profile-image.png')}}" x="0" y="0" height="30px" width="30px" style="border:1px solid; border-color:black; border-radius:15px" alt="{{ current_user.name }}"></td>
+                  {% else %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/' + current_user.profile_image)}}" x="0" y="0" height="30px" width="30px" style="border:1px solid; border-color:black; border-radius:15px" alt="{{ current_user.name }}"></td>
+                  {% endif %}
+                  <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <a class="nav-item nav-link" id="logout" href="/logout" style="text-align: center; color:black;" onclick="return confirm('Are you sure you want to logout your account?')"><b>Logout</b></a>
+                </ul>
+              </li>
+          </div>
+        </div>
+      </nav>
+    {% endif %}
+  
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %} {% if category ==
+      'error' %}
+      <div class="alert alert-danger alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% else %}
+      <div class="alert alert-success alert-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endif %} {% endfor %} {% endif %} {% endwith %}
+  
+      <div class="container">{% block content %} {% endblock %}</div>
+      <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "base.html" %} 
+{% block title %}User Profile{% endblock %} {% block content %}
+    <div class="jumbotron p-3">
+      <div class="well text-center">
+        <h1>ADMIN PROFILE</h1>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col md-12">
+
+          <div class="jumbotron p-3">
+            <h2>View <b>Your Profile</b></h2>
+
+            <div>
+              <table class="table table-hover table-dark">
+                <tr>
+                  <td><b>Profile Image:</b></td>
+                  {% if current_user.profile_image == 'None' %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/default-profile-image.png')}}" x="0" y="0" height="100px" width="100px" style="border:3px solid; border-color:black; border-radius:50px" alt="{{ current_user.profile_image }}"></td>
+                  {% else %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/' + current_user.profile_image)}}" x="0" y="0" height="100px" width="100px" style="border:3px solid; border-color:black; border-radius:50px" alt="{{ current_user.profile_image }}"></td>
+                  {% endif %}
+                </tr>
+
+                <tr>
+                  <td><b>Role:</b></td>
+                  <td>Admin</td>
+                </tr>
+
+                <tr>
+                  <td><b>Name:</b></td>
+                  <td>{{ current_user.name }}</td>
+                </tr>
+
+                <tr>
+                  <td><b>Email:</b></td>
+                  <td>{{ current_user.email }}</td>
+                </tr>
+
+                <tr>
+                  <td><b>Action:</b></td>
+                  <td><a href="/edituser/{{ current_user.id }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledituser{{ current_user.id }}">Edit</a></td>
+                </tr>
+
+                <!--Modal for Editing User-->
+              <div id="modaledituser{{ current_user.id }}" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Edit Your Profile</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="{{ url_for('auth.edituser') }}" method="POST" enctype="multipart/form-data">
+                        {{ csrf_token }}
+                        <input type="hidden" name="id" value="{{ current_user.id }}">
+                        <input type="text" name="user.name" id="user.name" class="form-control" value="{{ current_user.name }}"><br>
+                        <input type="email" name="user.email" id="user.email" class="form-control" value="{{ current_user.email }}"><br>
+                        <input type="file" name="user.image" id="user.image" class="form-control" value="{{ current_user.profile_image }}">
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary" onclick="return confirm('Do you want to save changes to your profile?')">Save changes</button>
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              </table>
+            </div>
+
+{% endblock %}

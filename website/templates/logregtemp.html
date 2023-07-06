@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logregstyle.css') }}" />
+</head>
+<body>
+  <div class="folder">
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-danger alert-dismissable fade show" role="alert">
+      {{ message }}
+      <span type="button" class="btn-close float-right" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </span>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissable fade show" role="alert">
+      {{ message }}
+      <span type="button" class="btn-close float-right" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </span>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+    <div class="container">
+        <div class="cardintro">
+          <div class="intro-box">
+            <div class="card-1">
+              <div>
+                <div><img src="{{ url_for('static', filename='images/logos/sparkle.png') }}" id="img" x="0" y="0" height="150px" width="150px" style="border:5px solid; border-color:yellow; border-radius:75px" alt="Sparkle Logo"></div><br>
+                <h4>Welcome to <u>Sparkle Online Shop</u>. A flask-based online shopping platform that enables users,
+                or customers, to look for different products, offers, and online purchases. The project
+                comprises of a list of products that are offered and are shown in different product categories.
+                These products can be browsed by the user based on categories. The consumer has the option of
+                adding a product to their shopping basket if they like it. When a person wants to check out, he
+                must first register on the website. Next time, he can log in using the same ID and password. Now,
+                he has the option of paying with a credit card, gcash, or cash upon delivery. Following a successful
+                transaction, the user receives a copy of the shopping receipt on his email address. The complete
+                system is made here using the Flask and Jinja frameworks.</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+            <div class="inner-box" id="card">
+                <div class="card-front">
+                    <form action="{{ url_for('auth.login') }}" method="POST">
+                      {{ csrf_token }}
+                        <h2 align="center">Login</h2>
+                        <div class="form-group">
+                          <label for="email">Email Address</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email"
+                          />
+                        </div><br>
+                        <div class="form-group">
+                          <label for="password">Password</label>
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            name="password"
+                            placeholder="Enter password"
+                          />
+                        </div>
+                        <br />
+                        <button type="submit" class="submit-btn">Submit</button>
+                        <input type="checkbox"><span>Remember Me</span>
+                      </form>
+                      <button type="button" class="btn" onclick="openSignup()">I'm New Here</button>
+                </div>
+                <div class="card-back">
+                    <form action="{{ url_for('auth.sign_up') }}" method="POST" enctype="multipart/form-data">
+                      {{ csrf_token }}
+                        <h2 align="center">Sign Up</h2>
+                        <div class="form-group">
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="name"
+                            name="name"
+                            placeholder="Enter your name"
+                          />
+                        </div>
+                        <label for="profile_image"><h6><i>Upload your profile photo (Optional)</i></h6></label>
+                        <div class="form-group">
+                          <input
+                            type="file"
+                            style="padding: 4px"
+                            class="form-control"
+                            id="image1"
+                            name="image1"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="password1"
+                            name="password1"
+                            placeholder="Enter password"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="password2"
+                            name="password2"
+                            placeholder="Confirm password"
+                          />
+                        </div>
+                        <br />
+                        <button type="submit" class="submit-btn" style="margin-top: 10px">Submit</button>
+                        <input type="checkbox"><span>Remember Me</span>
+                      </form>
+                      <button type="button" class="btn" onclick="openLogin()" style="margin-top: 35px">I have an account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var card = document.getElementById("card");
+
+        function openSignup(){
+            card.style.transform = "rotateY(-180deg)";
+        }
+        function openLogin(){
+            card.style.transform = "rotateY(0deg)";
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/a076d05399.js') }}"></script>
+</body>
+</html>

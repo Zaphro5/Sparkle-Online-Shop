@@ -1,0 +1,192 @@
+{% extends "base.html" %} 
+{% block title %}User Profile{% endblock %} {% block content %}
+    <div class="jumbotron p-3">
+      <div class="well text-center">
+        <h1>USER PROFILE</h1>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col md-12">
+
+          <div class="jumbotron p-3">
+            <h2>View <b>Your Profile</b></h2>
+
+            <div>
+              <table class="table table-hover table-dark">
+                <tr>
+                  <td><b>Profile Image:</b></td>
+                  {% if current_user.profile_image == 'None' %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/default-profile-image.png')}}" x="0" y="0" height="100px" width="100px" style="border:3px solid; border-color:black; border-radius:50px" alt="{{ current_user.profile_image }}"></td>
+                  {% else %}
+                  <td><img src="{{ url_for('static', filename='images/profile_images/' + current_user.profile_image)}}" x="0" y="0" height="100px" width="100px" style="border:3px solid; border-color:black; border-radius:50px" alt="{{ current_user.profile_image }}"></td>
+                  {% endif %}
+                </tr>
+
+                <tr>
+                  <td><b>Role:</b></td>
+                  <td>User w/ ID No. {{ current_user.id }}</td>
+                </tr>
+
+                <tr>
+                  <td><b>Name:</b></td>
+                  <td>{{ current_user.name }}</td>
+                </tr>
+
+                <tr>
+                  <td><b>Email:</b></td>
+                  <td>{{ current_user.email }}</td>
+                </tr>
+
+                <tr>
+                  <td><b>Actions:</b></td>
+                  <td>
+                    <a href="/edituser/{{ current_user.id }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledituser{{ current_user.id }}">Edit Profile</a>
+                    {% if user.contact %}
+                      <a href="/viewContact/{{ current_user.id }}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modalviewContact{{ current_user.id }}">View Contact Info</a>
+                      <a href="/editContact/{{ current_user.id }}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#modaleditContact{{ current_user.id }}">Edit Contact Info</a>
+                    {% else %}
+                      <a href="/addContact/{{ current_user.id }}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modaladdContact{{ current_user.id }}">+ Add Contact Info</a>
+                    {% endif %}    
+                  </td>
+                </tr>
+
+                <!--Modal for Editing User-->
+                <div id="modaledituser{{ current_user.id }}" class="modal fade" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Edit Your Profile</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{{ url_for('auth.edituser') }}" method="POST" enctype="multipart/form-data">
+                          {{ csrf_token }}
+                          <input type="hidden" name="id" value="{{ current_user.id }}">
+                          <input type="text" name="user.name" id="user.name" class="form-control" value="{{ current_user.name }}"><br>
+                          <input type="email" name="user.email" id="user.email" class="form-control" value="{{ current_user.email }}"><br>
+                          <input type="file" name="user.image" id="user.image" class="form-control" value="{{ current_user.profile_image }}">
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('Do you want to save changes to your profile?')">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <!--Modal for Editing Contact Information-->
+                <div id="modaleditContact{{ current_user.id }}" class="modal fade" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Edit Your Contact Information</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{{ url_for('auth.editContact') }}" method="POST">
+                          {{ csrf_token }}
+                          {% set contact = user.contact %}
+                          <input type="hidden" name="id" value="{{ contact.id }}">
+                          <label for="name">Recipient's Name</label>
+                          <input type="text" name="name" id="name" class="form-control" value="{{ contact.recipient_name }}"><br>
+                          <label for="phone_num">Phone Number</label>
+                          <input type="number" name="phone_num" id="user.email" class="form-control" min="9000000000" max="9999999999" value="{{ contact.phone_number }}"><br>
+                          <label for="add1">Region, Province, City, Barangay</label>
+                          <input type="text" name="add1" id="add1" class="form-control" value="{{ contact.address_macro }}"><br>
+                          <label for="postcode">Postal Code</label>
+                          <input type="number" name="postcode" id="postcode" class="form-control" min="1000" max="9999" value="{{ contact.postal_code }}"><br>
+                          <label for="add1">Street Name, Building, House No.</label>
+                          <input type="text" name="add2" id="add2" class="form-control" value="{{ contact.address_micro }}"><br>
+
+                          <label for="label">Label As</label>
+                          <select name="label" id="label" class="form-control">
+                            <option value="">{{ contact.label_as }}</option>
+                              <option value="Home">Home</option>
+                              <option value="Work">Work</option>
+                          </select><br>
+
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('Do you want to save changes to your contact information?')">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <!--Modal for Adding Contact Information-->
+                <div id="modaladdContact{{ current_user.id }}" class="modal fade" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Add Contact Information</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="{{ url_for('auth.addContact') }}" method="POST">
+                          {{ csrf_token }}
+                          <input type="text" name="name" id="name" class="form-control" placeholder="Recipient's Name"><br>
+                          <input type="number" name="phoneNum" id="phoneNum" class="form-control" min="9000000000" max="9999999999" placeholder="Phone Number"><br>
+                          <input type="text" name="add1" id="add1" class="form-control" placeholder="Region, Province, City, Barangay"><br>
+                          <input type="number" name="postcode" id="postcode" class="form-control" min="1000" max="9999" placeholder="Postal Code"><br>
+                          <input type="text" name="add2" id="add2" class="form-control" placeholder="Street Name, Building, House No."><br>
+
+                          <select name="label" id="label" class="form-control" required>
+                            <option value="">Label As:</option>
+                              <option value="Home">Home</option>
+                              <option value="Work">Work</option>
+                          </select><br>
+
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" onclick="return confirm('Do you want to add these contact information? You can only add contact info once but you can edit it on the Update Contact Info button.')">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </table>
+            </div>
+
+            <!--Modal for Showing Contact Information-->
+            <div id="modalviewContact{{ current_user.id }}" class="modal fade" tabindex="-1" role="dialog">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Your Contact Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="bg-light">
+                      {% set contact = user.contact %}
+                      <p><b>Recipient's Name: </b>{{ contact.recipient_name }}</p>
+                      <p><b>Phone Number: </b>+(63){{ contact.phone_number }}</p>
+                      <p><b>Address: </b>{{ contact.address_macro }}, {{ contact.address_micro }}</p>
+                      <p><b>Postal Code: </b>{{ contact.postal_code }}</p>
+                      <p><b>Label As: </b>{{ contact.label_as }}</p>
+                    </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+{% endblock %}
